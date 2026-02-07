@@ -1,0 +1,11 @@
+services:
+  trading-bot:
+    build: .
+    platform: linux/amd64
+    volumes:
+      - bot-data:/app/data
+      - /run/rofl-appd.sock:/run/rofl-appd.sock
+    environment:
+      - RPC_URL=https://sepolia.base.org
+volumes:
+  bot-data:
