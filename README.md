@@ -9,8 +9,8 @@
 
 ### Team Members  
 Sofie Rüffer  
-Matthew Wilson
-Aakash Gnanavelu
+Matthew Wilson   
+Aakash Gnanavelu    
 
 <br>
 
