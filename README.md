@@ -9,8 +9,8 @@
 
 ### Team Members  
 Sofie Rüffer  
-...
-...
+Matthew Wilson
+Aakash Gnanavelu
 
 <br>
 
@@ -18,31 +18,43 @@ Sofie Rüffer
 
 Every trading bot today asks you to hand over your private key or deposit funds into a developer-controlled wallet. You're trusting strangers not to steal your money.
 
+<br>
+
 ## Our Solution
 
-_AGIES_ is an autonomous trading bot that generates its own private keys inside a **Intel TDX Trusted Execution Environment** (TEE) via [Oasis ROFL](https://docs.oasis.io/build/rofl/). This means that nobody can access user funds.
+Here, we built _AEGIS_, an autonomous trading bot that generates its own private keys inside an **Intel TDX Trusted Execution Environment** (TEE) via [Oasis ROFL](https://docs.oasis.io/build/rofl/). This means that nobody can access user funds, not even us.
+
+It generates its own private key inside the TEE. That key is used to create a wallet and sign transactions but the key itself never leaves the hardware. There is no API to extract it, no admin backdoor and no way to access it. 
+
+Users simply send ETH to the bot's wallet address. AEGIS monitors market conditions and autonomously trades ETH ↔ USDC on Uniswap V3 when its strategy signals a favorable opportunity. All of this happens inside the TEE, the decision-making, the key usage, the transaction signing.
+
+<br>
 
 ## How It Works
 
 ```
-┌─────────────────────────────────────────────────┐
-│  Intel TDX — Trusted Execution Environment      │
-│                                                 │
-│  ┌──────────┐   ┌──────────┐   ┌─────────────┐  │
-│  │ Key Gen  │   │ Strategy │   │ Swap on     │  │
-│  │ (hw-     │   │ Engine   │   │ Uniswap V3  │  │
-│  │  derived)│──▶│ (5 signal│──▶│   (Base     │  │
-│  │          │   │ heurist) │   │  Sepolia)   │  │
-│  └──────────┘   └──────────┘   └─────────────┘  │
-│   Never leaves    Auditable      On-chain       │
-│   the enclave     decisions        proof        │
-└─────────────────────────────────────────────────┘
-```
+                      User sends ETH
+                            │
+                            ▼
+┌──────────────────── Intel TDX (TEE) ──────────────────┐
+│                                                       │
+│  1. Generate private key (hardware-derived)           │
+│                                                       │
+│  2. Fetch market data (price, volume, volatility)     │
+│                                                       │
+│  3. Strategy engine scores 5 signals                  │
+│                                                       │
+│  4. If score ≥ threshold → swap ETH ↔ USDC            │
+│                                                       │
+│  5. Sign transaction with TEE-secured key             │
+│                                                       │
+│  Nothing leaves this box except signed transactions.  │
+└───────────────────────────────────────────────────────┘
+                            │
+                            ▼
+    Transaction on Base Sepolia (verifiable on-chain)
 
-1. **TEE generates a private key** — hardware-isolated, inaccessible to anyone
-2. **Strategy engine evaluates 5 market signals** — price momentum, volume, volatility, trend, market cap
-3. **If conditions are met → executes swap** on Uniswap V3 (Base Sepolia)
-4. **Remote attestation proves** the exact code running inside the TEE
+```
 
 ## Tech Stack
 
@@ -54,6 +66,36 @@ _AGIES_ is an autonomous trading bot that generates its own private keys inside 
 | Strategy | 5-signal heuristic engine (weighted scoring) |
 | Language | Node.js (ES modules) |
 | Market Data | CoinGecko API (free, no key) |
+
+
+## Why TEE?
+
+With traditional bots,the developer holds your private key and the decision logic is a black box. Using TEEs we are able to generate a key inside hardware, meaning that theft is impossible. Additionally, auditable logs are produced inside the TEE.
+
+| Traditional Bot | AEGIS (TEE-Secured) |
+|---|---|
+| Developer holds your private key | Key generated inside hardware, developer never sees it |
+| You trust the developer won't steal funds | Theft is **physically impossible** — enforced by the chip |
+| No way to verify what code is running | **Remote attestation** cryptographically proves the exact code |
+| Decision logic is a black box | Auditable logs produced inside the TEE |
+
+<br>
+
+## Strategy Engine
+
+The heuristic engine evaluates 5 weighted signals from CoinGecko:
+
+| Signal | Weight | Logic |
+|---|---|---|
+| 24h Price Change | 30% | Momentum indicator |
+| 7d Price Change | 20% | Trend direction |
+| Volume Change | 25% | Market activity |
+| Volatility | 15% | Risk assessment |
+| Market Cap Rank | 10% | Asset quality |
+
+Combined score ≥ 30 → **SWAP** · Score < 30 → **HOLD**
+
+<br>
 
 ## Quick Start (Local Dev)
 
@@ -100,28 +142,12 @@ oasis rofl deploy --account myaccount
 ```
 
 When running inside the TEE, the bot automatically switches to hardware-derived key generation:
-```
-🔐 Key generated INSIDE TEE — hardware-secured, inaccessible to developers
-```
 
-## Strategy Engine
 
-The heuristic engine evaluates 5 weighted signals from CoinGecko:
 
-| Signal | Weight | Logic |
-|---|---|---|
-| 24h Price Change | 30% | Momentum indicator |
-| 7d Price Change | 20% | Trend direction |
-| Volume Change | 25% | Market activity |
-| Volatility | 15% | Risk assessment |
-| Market Cap Rank | 10% | Asset quality |
-
-Combined score ≥ 30 → **SWAP** · Score < 30 → **HOLD**
-
-## Project Structure
+## Repository Structure
 
 ```
-vaultbot/
 ├── bot.js           # Main bot — TEE key gen + trading loop
 ├── strategy.js      # 5-signal heuristic decision engine
 ├── Dockerfile       # Container for ROFL deployment
