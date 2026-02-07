@@ -1,6 +1,7 @@
 services:
   trading-bot:
     build: .
+    image: "docker.io/sofie/trading-bot:latest"
     platform: linux/amd64
     volumes:
       - bot-data:/app/data
