@@ -1,6 +1,29 @@
 import "dotenv/config";
 import { ethers } from "ethers";
+import { existsSync } from "node:fs";
 import { evaluate } from "./strategy.js";
+
+// --- ROFL TEE Key Generation ---
+const ROFL_SOCKET = "/run/rofl-appd.sock";
+
+async function getPrivateKey() {
+	// If running inside TEE → generate key from hardware
+	if (existsSync(ROFL_SOCKET)) {
+		const { RoflClient, KeyKind } = await import("@oasisprotocol/rofl-client");
+		const client = new RoflClient();
+		const hex = await client.generateKey("trading-bot-key", KeyKind.SECP256K1);
+		console.log("🔐 Key generated INSIDE TEE (hardware-derived)");
+		return hex.startsWith("0x") ? hex : `0x${hex}`;
+	}
+
+	// If running locally → use .env key
+	if (process.env.PRIVATE_KEY) {
+		console.log("🔑 Using local .env key (NOT secure — dev mode only)");
+		return process.env.PRIVATE_KEY;
+	}
+
+	throw new Error("No key available. Set PRIVATE_KEY in .env or run inside TEE.");
+}
 
 // --- Config ---
 const SWAP_AMOUNT = process.env.TRADE_AMOUNT_ETH ?? "0.001";
@@ -28,12 +51,6 @@ const ROUTER_ABI = [
 ];
 
 // --- Helpers ---
-function mustEnv(name) {
-	const v = process.env[name];
-	if (!v) throw new Error(`Missing env var: ${name}`);
-	return v;
-}
-
 function applySlippage(amount, bps) {
 	return (amount * BigInt(10000 - bps)) / BigInt(10000);
 }
@@ -55,7 +72,6 @@ async function executeSwap(wallet, fee) {
 	const router = new ethers.Contract(SWAP_ROUTER_02, ROUTER_ABI, wallet);
 	const amountIn = ethers.parseEther(SWAP_AMOUNT);
 
-	// Get quote
 	const quotedOut = await quoter.quoteExactInputSingle.staticCall({
 		tokenIn: WETH,
 		tokenOut: USDC,
@@ -68,7 +84,6 @@ async function executeSwap(wallet, fee) {
 	console.log(`   Quoted output: ${ethers.formatUnits(quotedOut, 6)} USDC`);
 	console.log(`   Min output (with slippage): ${ethers.formatUnits(minOut, 6)} USDC`);
 
-	// Execute swap
 	const tx = await router.exactInputSingle(
 		{
 			tokenIn: WETH,
@@ -82,40 +97,44 @@ async function executeSwap(wallet, fee) {
 		{ value: amountIn }
 	);
 
-	console.log(`   Tx sent: ${tx.hash}`);
+	console.log(`   ✅ Tx sent: ${tx.hash}`);
 	const receipt = await tx.wait();
-	console.log(`   Confirmed in block ${receipt.blockNumber}`);
+	console.log(`   ✅ Confirmed in block ${receipt.blockNumber}`);
 	console.log(`   🔗 https://sepolia.basescan.org/tx/${tx.hash}`);
 }
 
 // --- Main ---
 async function main() {
 	console.log("====================================");
-	console.log("  TEE Trading Bot (Local Version)");
+	console.log("  TEE Trading Bot");
 	console.log("====================================\n");
 
+	// Get key (TEE or local)
+	const privateKey = await getPrivateKey();
+
 	// Setup
-	const provider = new ethers.JsonRpcProvider(mustEnv("RPC_URL"));
-	const wallet = new ethers.Wallet(mustEnv("PRIVATE_KEY"), provider);
-	console.log(`Wallet: ${wallet.address}`);
+	const rpcUrl = process.env.RPC_URL ?? "https://sepolia.base.org";
+	const provider = new ethers.JsonRpcProvider(rpcUrl);
+	const wallet = new ethers.Wallet(privateKey, provider);
+	console.log(`🤖 Wallet: ${wallet.address}`);
 
 	const balance = await provider.getBalance(wallet.address);
-	console.log(`Balance: ${ethers.formatEther(balance)} ETH`);
+	console.log(`💰 Balance: ${ethers.formatEther(balance)} ETH`);
 
 	// Find pool
 	const factory = new ethers.Contract(UNISWAP_FACTORY, FACTORY_ABI, provider);
 	const { pool, fee } = await findPool(factory);
-	console.log(`Pool found: ${pool} (fee: ${fee})`);
+	console.log(`🏊 Pool found: ${pool} (fee: ${fee})`);
 
 	// Evaluate strategy
 	const decision = await evaluate();
 
 	// Act on decision
 	if (decision.action === "SWAP") {
-		console.log(`\nExecuting swap: ${SWAP_AMOUNT} ETH → USDC\n`);
+		console.log(`\n🔄 Executing swap: ${SWAP_AMOUNT} ETH → USDC\n`);
 		await executeSwap(wallet, fee);
 	} else {
-		console.log(`\nHolding. Score too low for swap.`);
+		console.log(`\n⏸️  Holding. Score too low for swap.`);
 	}
 
 	console.log("\n====================================");
