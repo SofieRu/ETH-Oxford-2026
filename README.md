@@ -149,6 +149,165 @@ The same codebase runs in both dev and production. In the TEE, keys are derived 
 
 Built at ETH Oxford 2026
 
+---
+
+## Backend Architecture
+
+### Overview
+The backend implements a trustless AI trading agent with hardware-enforced security guarantees. All core modules are complete, tested, and ready for TEE deployment.
+
+### Core Modules
+
+#### 1. Wallet Module (`src/wallet.ts`)
+**Purpose:** Secure private key management with TEE-ready architecture
+
+**Features:**
+- Hardware entropy-based key generation (`crypto.randomBytes`)
+- AES-256-CBC encryption for key storage
+- Sealed storage (keys encrypted at rest)
+- Transaction signing without key exposure
+- Balance checking and address management
+
+**Security Properties:**
+- Private keys never logged or exported
+- Keys encrypted with hardware-derived secrets
+- Production-ready for TEE deployment (Oasis ROFL)
+
+**Test:** `npx ts-node src/test-wallet.ts`
+
+---
+
+#### 2. Strategy Module (`src/strategy.ts`)
+**Purpose:** Market analysis and trading signal generation
+
+**Features:**
+- Multi-oracle price consensus (CoinGecko + CryptoCompare)
+- RSI (Relative Strength Index) momentum indicator
+- Configurable oversold/overbought thresholds
+- Historical data analysis (7 days of hourly candles)
+- Oracle disagreement detection (2% spread tolerance)
+
+**Trading Logic:**
+- RSI < 30 → BUY signal (oversold)
+- RSI > 70 → SELL signal (overbought)  
+- RSI 30-70 → HOLD (neutral)
+
+**Test:** `npx ts-node src/test-strategy.ts`
+
+---
+
+#### 3. Policy Module (`src/policy.ts`)
+**Purpose:** Safety enforcement and risk management
+
+**Features:**
+- Maximum trade size limits
+- Daily trading volume caps
+- Rate limiting (minimum interval between trades)
+- Token whitelist enforcement
+- Emergency stop mechanism
+- Daily volume reset at midnight
+
+**Policy Checks:**
+1. Emergency stop status
+2. Trade size validation
+3. Daily limit verification
+4. Rate limit enforcement
+5. Token whitelist check
+
+**This is where "unruggable" is enforced** - these checks run inside the TEE where even the developer cannot bypass them.
+
+**Test:** `npx ts-node src/test-policy.ts`
+
+---
+
+#### 4. Trader Module (`src/trader.ts`)
+**Purpose:** DEX integration and swap execution
+
+**Features:**
+- Uniswap V2 integration
+- Transaction construction for swaps
+- Slippage tolerance calculation
+- Gas price estimation
+- Path routing (ETH ↔ USDC)
+
+**Supported Operations:**
+- BUY: Swap ETH → USDC
+- SELL: Swap USDC → ETH
+
+**Networks Supported:**
+- Sepolia (testnet)
+- Base Sepolia (testnet)
+- Easily configurable for other EVM chains
+
+**Test:** `npx ts-node src/test-trader.ts`
+
+---
+
+#### 5. Main Orchestrator (`src/main.ts`)
+**Purpose:** Integration layer that ties all modules together
+
+**Features:**
+- Continuous trading loop
+- Module coordination (wallet → strategy → policy → trader)
+- Error handling and recovery
+- Configurable check intervals
+- Graceful shutdown
+
+**Flow:**
+1. Generate trading signal (strategy module)
+2. Check policy constraints (policy module)
+3. If approved, execute swap (trader module)
+4. Wait for configured interval
+5. Repeat
+
+**Test:** `npx ts-node src/test-main.ts`
+
+---
+
+### Configuration
+
+All modules are configured via environment variables in `.env`:
+
+```bash
+# Network
+RPC_URL=https://eth-sepolia.g.alchemy.com/v2/YOUR_KEY
+CHAIN_ID=11155111
+
+# Token addresses (Sepolia / Base Sepolia)
+WETH_ADDRESS=0x...
+USDC_ADDRESS=0x...
+
+# Policy
+MAX_TRADE_SIZE_ETH=0.5
+DAILY_LIMIT_ETH=2.0
+MIN_TRADE_INTERVAL_SECONDS=600
+MAX_SLIPPAGE_PERCENT=2.0
+EMERGENCY_STOP=0
+
+# Strategy (RSI)
+RSI_PERIOD=14
+RSI_OVERSOLD=30
+RSI_OVERBOUGHT=70
+
+# Wallet
+WALLET_PASSPHRASE=your-secure-passphrase
+WALLET_KEY_FILE=wallet.enc
+
+# Optional
+TRADE_CHECK_INTERVAL_MS=600000
+MOCK_PRICES=0
+PRICE_API_BASE_URL=
+```
+
+Run the agent from `backend/tee-agent`:
+```bash
+cd backend/tee-agent
+npm install
+npx ts-node src/main.ts
+```
+
+---
+
 ## License
 
 MIT
