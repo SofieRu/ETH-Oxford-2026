@@ -30,6 +30,19 @@ Users simply send ETH to the bot's wallet address. AEGIS monitors market conditi
 
 <br>
 
+## Why TEE?
+
+With traditional bots,the developer holds your private key and the decision logic is a black box. Using TEEs we are able to generate a key inside hardware, meaning that theft is impossible. Additionally, auditable logs are produced inside the TEE.
+
+| Traditional Bot | AEGIS (TEE-Secured) |
+|---|---|
+| Developer holds your private key | Key generated inside hardware, developer never sees it |
+| You trust the developer won't steal funds | Theft is **physically impossible** — enforced by the chip |
+| No way to verify what code is running | **Remote attestation** cryptographically proves the exact code |
+| Decision logic is a black box | Auditable logs produced inside the TEE |
+
+<br>
+
 ## How It Works
 
 ```
@@ -56,6 +69,8 @@ Users simply send ETH to the bot's wallet address. AEGIS monitors market conditi
 
 ```
 
+<br>
+
 ## Tech Stack
 
 | Component | Technology |
@@ -67,17 +82,6 @@ Users simply send ETH to the bot's wallet address. AEGIS monitors market conditi
 | Language | Node.js (ES modules) |
 | Market Data | CoinGecko API (free, no key) |
 
-
-## Why TEE?
-
-With traditional bots,the developer holds your private key and the decision logic is a black box. Using TEEs we are able to generate a key inside hardware, meaning that theft is impossible. Additionally, auditable logs are produced inside the TEE.
-
-| Traditional Bot | AEGIS (TEE-Secured) |
-|---|---|
-| Developer holds your private key | Key generated inside hardware, developer never sees it |
-| You trust the developer won't steal funds | Theft is **physically impossible** — enforced by the chip |
-| No way to verify what code is running | **Remote attestation** cryptographically proves the exact code |
-| Decision logic is a black box | Auditable logs produced inside the TEE |
 
 <br>
 
@@ -125,6 +129,8 @@ Pool found: 0x94bf...eC0 (fee: 500)
 ETH: $2040.42 (24h: -0.07%, 7d: -17.77%)
 Strategy Decision: HOLD (score: -13, confidence: 13%)
 ```
+
+<br>
 
 ## Deploy to TEE (Production)
 
