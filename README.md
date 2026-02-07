@@ -1,8 +1,22 @@
-# ETH-Oxford-2026 — Programmable Cryptography Track
+# ETH Oxford 2026
 
-# TEE-Secured Autonomous Trading Bot
+<p align="center">
+  <img src="images/Logo_Final.png" alt="Haikara logo" width="330">
+</p>
 
-An autonomous trading bot that generates its own private keys inside a Trusted Execution Environment (TEE). Nobody can access user funds.
+
+# _AGIES_
+
+### Team Members  
+Sofie Rüffer  
+...
+...
+
+<br>
+
+## Introduction
+
+_AGIES_ is an autonomous trading bot that generates its own private keys inside a Trusted Execution Environment (TEE). This means that nobody can access user funds.
 
 ## The Problem
 
