@@ -5,7 +5,7 @@
 </p>
 
 
-# _AGIES_
+# _AEGIS_
 
 ### Team Members  
 Sofie Rüffer  
@@ -14,17 +14,13 @@ Sofie Rüffer
 
 <br>
 
-## Introduction
-
-_AGIES_ is an autonomous trading bot that generates its own private keys inside a Trusted Execution Environment (TEE). This means that nobody can access user funds.
-
 ## The Problem
 
 Every trading bot today asks you to hand over your private key or deposit funds into a developer-controlled wallet. You're trusting strangers not to steal your money.
 
 ## Our Solution
 
-Aegis runs inside an **Intel TDX Trusted Execution Environment** via [Oasis ROFL](https://docs.oasis.io/build/rofl/). The bot's private key is born inside the TEE and never leaves. 
+_AGIES_ is an autonomous trading bot that generates its own private keys inside a **Intel TDX Trusted Execution Environment** (TEE) via [Oasis ROFL](https://docs.oasis.io/build/rofl/). This means that nobody can access user funds.
 
 ## How It Works
 
