@@ -1,7 +1,7 @@
 TEE Type: Intel TDX
 App ID: rofl1qp9lm376wkqzce2w9nxg5fy3yrn3wqnrv5ang45w
 Machine ID: 000000000000057f
-Wallet:  0x84F2ff12c1cbCebc73F37386b05c06464ab5e147
+Wallet: 0x84F2ff12c1cbCebc73F37386b05c06464ab5e147
 Status: accepted
 Hash: sha256:c97686c586d1620308ad53baa2aa7f72eb8482d415da5208f0d954e4c4b7dc56
 Network: Oasis Sapphire Testnet

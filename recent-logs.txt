@@ -1,0 +1,4 @@
+Downloading compose.yaml artifact...
+  URI: compose.yaml
+Unlock your account.
+[1;92m? [0m[1;99mPassphrase: [0m[?25l7[999;999f[6n

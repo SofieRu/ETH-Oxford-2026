@@ -12,7 +12,7 @@
 
 ## Wallet Address
 
- 0x84F2ff12c1cbCebc73F37386b05c06464ab5e147
+`0x84F2ff12c1cbCebc73F37386b05c06464ab5e147`
 
 ## Deployment Hash
 

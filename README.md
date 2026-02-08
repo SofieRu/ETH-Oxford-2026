@@ -91,6 +91,26 @@ AEGIS is built as **5 modules** that run in sequence every cycle:
 
 <br>
 
+
+## Live demo (hackathon)
+
+<p align="center">
+  <img src="images/demo_final.gif" alt="AEGISdemo" width="680">
+</p>
+
+<br>
+
+| Item | Value |
+|------|--------|
+| **App ID** | `rofl1qp9lm376wkqzce2w9nxg5fy3yrn3wqnrv5ang45w` |
+| **Network** | Oasis Sapphire Testnet |
+| **TEE** | Intel TDX (Oasis ROFL) |
+| **Wallet** | See `attestation-report.md` or run `npm run extract-attestation` in `backend/tee-agent` (wallet may need manual add from `oasis rofl machine logs default`) |
+
+Verification: see **attestation-report.md** and **DEPLOYMENT.md** in this repo.
+
+<br>
+
 ## Tech Stack
 
 | Component | Technology |
@@ -102,19 +122,6 @@ AEGIS is built as **5 modules** that run in sequence every cycle:
 | Language | Node.js (ES modules) |
 | Market Data | CoinGecko API (free, no key) |
 
-
-<br>
-
-## Live demo (hackathon)
-
-| Item | Value |
-|------|--------|
-| **App ID** | `rofl1qp9lm376wkqzce2w9nxg5fy3yrn3wqnrv5ang45w` |
-| **Network** | Oasis Sapphire Testnet |
-| **TEE** | Intel TDX (Oasis ROFL) |
-| **Wallet** | See `attestation-report.md` or run `npm run extract-attestation` in `backend/tee-agent` (wallet may need manual add from `oasis rofl machine logs default`) |
-
-Verification: see **attestation-report.md** and **DEPLOYMENT.md** in this repo.
 
 <br>
 

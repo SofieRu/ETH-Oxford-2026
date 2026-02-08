@@ -3,7 +3,7 @@
   "machineId": "000000000000057f",
   "teeType": "Intel TDX",
   "deploymentHash": "sha256:c97686c586d1620308ad53baa2aa7f72eb8482d415da5208f0d954e4c4b7dc56",
-  "walletAddress": " 0x84F2ff12c1cbCebc73F37386b05c06464ab5e147",
+  "walletAddress": "0x84F2ff12c1cbCebc73F37386b05c06464ab5e147",
   "network": "Oasis Sapphire Testnet",
   "status": "accepted",
   "createdAt": "2026-02-08 03:52:11 +0000 GMT",
