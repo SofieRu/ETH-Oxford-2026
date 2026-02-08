@@ -3,7 +3,7 @@
 <br>
 
 <p align="center">
-  <img src="images/Aegis Logo.png" alt="Aegis logo" width="330">
+  <img src="images/Aegis Logo.png" alt="Aegis logo" width="350">
 </p>
 
 
@@ -33,8 +33,6 @@ Users simply send ETH to the bot's wallet address. AEGIS monitors market conditi
 <br>
 
 ## Why TEE?
-
-With traditional bots,the developer holds your private key and the decision logic is a black box. Using TEEs we are able to generate a key inside hardware, meaning that theft is impossible. Additionally, auditable logs are produced inside the TEE.
 
 | Traditional Bot | AEGIS (TEE-Secured) |
 |---|---|
@@ -73,6 +71,28 @@ With traditional bots,the developer holds your private key and the decision logi
 
 <br>
 
+## Architecture 
+
+AEGIS is built as 5 modules that run in sequence every cycle:
+
+**Wallet:** Generates and manages private keys with hardware entropy. Keys are encrypted at rest using AES-256-CBC and never logged or exported. In the TEE, keys are derived from hardware. Outside, they are derived from a passphrase-encrypted file.
+
+**Strategy:** Pulls price data from two independent oracles (CoinGecko + CryptoCompare) and computes RSI over 7 days of hourly candles. If the oracles disagree by more than 2%, the bot holds as a safety measure.
+
+| RSI Value | Signal |
+|---|---|
+| Below 30 | BUY (oversold) |
+| Above 70 | SELL (overbought) |
+| 30 – 70 | HOLD (neutral) |
+
+**Policy:** A safety layer that runs inside the TEE, that encodes maximum trade size per swap, daily trading volume cap (resets at midnight), rate limiting between trades, token whitelist (only approved pairs) and emergency stop switch.
+
+**Trader:** Constructs and submits swaps on Uniswap V2 with configurable slippage tolerance, gas estimation, and ETH ↔ USDC path routing. Supports Sepolia, Base Sepolia, and any EVM chain.
+
+**Orchestrator:** Ties it all together in a continuous loop: Signal → Policy Check → Execute → Wait → Repeat. Handles errors gracefully and shuts down cleanly.
+
+<br>
+
 ## Tech Stack
 
 | Component | Technology |
@@ -87,28 +107,15 @@ With traditional bots,the developer holds your private key and the decision logi
 
 <br>
 
-## Strategy Engine
+## How to run it
 
-The heuristic engine evaluates 5 weighted signals from CoinGecko:
-
-| Signal | Weight | Logic |
-|---|---|---|
-| 24h Price Change | 30% | Momentum indicator |
-| 7d Price Change | 20% | Trend direction |
-| Volume Change | 25% | Market activity |
-| Volatility | 15% | Risk assessment |
-| Market Cap Rank | 10% | Asset quality |
-
-Combined score ≥ 30 → **SWAP** · Score < 30 → **HOLD**
-
-<br>
-
-## Quick Start (Local Dev)
 
 ```bash
-git clone https://github.com/...
-cd tee-bot
+git clone https://github.com/YOUR_TEAM/aegis.git
+cd backend/tee-agent
 npm install
+cp .env.example .env   # configure your keys and settings
+npx ts-node src/main.ts
 ```
 
 Create a `.env` file:
@@ -182,18 +189,8 @@ async function getPrivateKey() {
 
 The same codebase runs in both dev and production. In the TEE, keys are derived from hardware, so they never exist outside the encrypted enclave.
 
-## Verification
 
-- **ROFL App ID:** `rofl1qqqlx299mq4ggeq3gfh5nkxztxxks595nczzeke5`
-- **Docker Image:** `docker.io/sofieru/trading-bot:latest`
-- **Bot Wallet:** `0xA77b7b47056c3e66bB1fa2d2131E3e867a079837`
-- **Network:** Oasis Sapphire Testnet + Base Sepolia
-
-## Team
-
-Built at ETH Oxford 2026
-
----
+<!-- 
 
 ## Backend Architecture
 
@@ -219,7 +216,7 @@ The backend implements a trustless AI trading agent with hardware-enforced secur
 
 **Test:** `npx ts-node src/test-wallet.ts`
 
----
+
 
 #### 2. Strategy Module (`src/strategy.ts`)
 **Purpose:** Market analysis and trading signal generation
@@ -351,6 +348,8 @@ npx ts-node src/main.ts
 ```
 
 ---
+
+-->
 
 ## License
 
