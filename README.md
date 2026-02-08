@@ -184,17 +184,17 @@ When running inside the TEE, the agent uses the sealed wallet (`wallet.enc` + `W
 ## Repository Structure
 
 ```
-├── backend/tee-agent/   # TEE trading agent (TypeScript)
+├── backend/tee-agent/    # TEE trading agent (TypeScript)
 │   ├── src/              # main.ts, wallet, strategy, policy, trader
-│   ├── scripts/         # deploy.ts, extract-attestation.ts
-│   ├── .env.example     # Template — copy to .env
-│   └── package.json     # npm run build|start|deploy|extract-attestation
-├── Dockerfile           # Container for ROFL deployment
-├── compose.yaml         # Docker Compose for Oasis ROFL
-├── rofl.yaml            # ROFL app manifest (Intel TDX)
-├── DEPLOYMENT.md        # Step-by-step TEE deployment
+│   ├── scripts/          # deploy.ts, extract-attestation.ts
+│   ├── .env.example      # Template — copy to .env
+│   └── package.json      # npm run build|start|deploy|extract-attestation
+├── Dockerfile            # Container for ROFL deployment
+├── compose.yaml          # Docker Compose for Oasis ROFL
+├── rofl.yaml             # ROFL app manifest (Intel TDX)
+├── DEPLOYMENT.md         # Step-by-step TEE deployment
 ├── attestation-report.md # TEE attestation (for judges)
-└── bot.js / strategy.js # Legacy bot (root)
+└── bot.js / strategy.js  # Legacy bot (root)
 ```
 
 ## Key Innovation
