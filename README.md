@@ -83,11 +83,11 @@ AEGIS is built as **5 modules** that run in sequence every cycle:
 | Above 70 | SELL (overbought) |
 | 30 – 70 | HOLD (neutral) |
 
-**Policy:** A safety layer that runs inside the TEE, that encodes maximum trade size per swap, daily trading volume cap (resets at midnight), rate limiting between trades, token whitelist (only approved pairs) and emergency stop switch.
+**3. Policy:** A safety layer that runs inside the TEE, that encodes maximum trade size per swap, daily trading volume cap (resets at midnight), rate limiting between trades, token whitelist (only approved pairs) and emergency stop switch.
 
-**Trader:** Constructs and submits swaps on Uniswap V2 with configurable slippage tolerance, gas estimation, and ETH ↔ USDC path routing. Supports Sepolia, Base Sepolia, and any EVM chain.
+**4. Trader:** Constructs and submits swaps on Uniswap V2 with configurable slippage tolerance, gas estimation, and ETH ↔ USDC path routing. Supports Sepolia, Base Sepolia, and any EVM chain.
 
-**Orchestrator:** Ties it all together in a continuous loop: Signal → Policy Check → Execute → Wait → Repeat. Handles errors gracefully and shuts down cleanly.
+**5. Orchestrator:** Ties it all together in a continuous loop: Signal → Policy Check → Execute → Wait → Repeat. Handles errors gracefully and shuts down cleanly.
 
 <br>
 
