@@ -71,7 +71,7 @@ Users simply send ETH to the bot's wallet address. AEGIS monitors market conditi
 
 <br>
 
-AEGIS is built as 5 modules that run in sequence every cycle:
+AEGIS is built as __5 modules__ that run in sequence every cycle:
 
 **Wallet:** Generates and manages private keys with hardware entropy. Keys are encrypted at rest using AES-256-CBC and never logged or exported. In the TEE, keys are derived from hardware. Outside, they are derived from a passphrase-encrypted file.
 
