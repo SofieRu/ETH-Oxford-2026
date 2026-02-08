@@ -107,7 +107,7 @@ AEGIS is built as **5 modules** that run in sequence every cycle:
 
 ## How to run it
 
-
+### Using Aegis
 ```bash
 git clone https://github.com/YOUR_TEAM/aegis.git
 cd backend/tee-agent
@@ -135,6 +135,13 @@ Balance: 0.0 ETH
 Pool found: 0x94bf...eC0 (fee: 500)
 ETH: $2040.42 (24h: -0.07%, 7d: -17.77%)
 Strategy Decision: HOLD (score: -13, confidence: 13%)
+```
+
+### Deploying the website
+This project was developed using Python 3.13.2. 
+```bash
+pip install requirements.txt
+python web/dist/app.py
 ```
 
 <br>
