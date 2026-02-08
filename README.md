@@ -28,7 +28,7 @@ Here, we built _AEGIS_, an autonomous trading bot that generates its own private
 
 It generates its own private key inside the TEE. That key is used to create a wallet and sign transactions but the key itself never leaves the hardware. There is no API to extract it, no admin backdoor and no way to access it. 
 
-Users simply send ETH to the bot's wallet address. AEGIS monitors market conditions and autonomously trades ETH ↔ USDC on Uniswap V3 when its strategy signals a favorable opportunity. All of this happens inside the TEE, the decision-making, the key usage, the transaction signing.
+Users simply send ETH to the bot's wallet address. AEGIS monitors market conditions and autonomously trades ETH ↔ USDC on Uniswap V2 when its strategy signals a favorable opportunity. All of this happens inside the TEE, the decision-making, the key usage, the transaction signing.
 
 <br>
 
@@ -53,11 +53,11 @@ Users simply send ETH to the bot's wallet address. AEGIS monitors market conditi
 │                                                       │
 │  1. Generate private key (hardware-derived)           │
 │                                                       │
-│  2. Fetch market data (price, volume, volatility)     │
+│  2. Fetch market data (multi-oracle: CoinGecko + CryptoCompare) │
 │                                                       │
-│  3. Strategy engine scores 5 signals                  │
+│  3. Strategy: RSI momentum → BUY / SELL / HOLD        │
 │                                                       │
-│  4. If score ≥ threshold → swap ETH ↔ USDC            │
+│  4. Policy check → if allowed, swap ETH ↔ USDC        │
 │                                                       │
 │  5. Sign transaction with TEE-secured key             │
 │                                                       │
@@ -97,44 +97,52 @@ AEGIS is built as **5 modules** that run in sequence every cycle:
 |---|---|
 | TEE Runtime | [Oasis ROFL](https://docs.oasis.io/build/rofl/) on Intel TDX |
 | Blockchain | Base Sepolia (Ethereum L2) |
-| DEX | Uniswap V3 |
-| Strategy | 5-signal heuristic engine (weighted scoring) |
+| DEX | Uniswap V2 (Base Sepolia) |
+| Strategy | RSI momentum (CoinGecko + CryptoCompare oracles) |
 | Language | Node.js (ES modules) |
 | Market Data | CoinGecko API (free, no key) |
 
 
 <br>
 
+## Live demo (hackathon)
+
+| Item | Value |
+|------|--------|
+| **App ID** | `rofl1qp9lm376wkqzce2w9nxg5fy3yrn3wqnrv5ang45w` |
+| **Network** | Oasis Sapphire Testnet |
+| **TEE** | Intel TDX (Oasis ROFL) |
+| **Wallet** | See `attestation-report.md` or run `npm run extract-attestation` in `backend/tee-agent` (wallet may need manual add from `oasis rofl machine logs default`) |
+
+Verification: see **attestation-report.md** and **DEPLOYMENT.md** in this repo.
+
+<br>
+
 ## How to run it
 
-### Using Aegis
+### TEE agent (AEGIS — recommended)
+
 ```bash
-git clone https://github.com/YOUR_TEAM/aegis.git
-cd backend/tee-agent
+git clone https://github.com/SofieRu/ETH-Oxford-2026.git
+cd ETH-Oxford-2026/backend/tee-agent
 npm install
-cp .env.example .env   # configure your keys and settings
+cp .env.example .env   # set RPC_URL, WETH_ADDRESS, USDC_ADDRESS, WALLET_PASSPHRASE
 npx ts-node src/main.ts
 ```
 
-Create a `.env` file:
-```
-PRIVATE_KEY=your_test_wallet_private_key
-RPC_URL=https://sepolia.base.org
-```
+Create `.env` from `.env.example` with at least:
+- `RPC_URL` (e.g. `https://sepolia.base.org`)
+- `WETH_ADDRESS`, `USDC_ADDRESS` (token addresses for your chain)
+- `WALLET_PASSPHRASE` (used to encrypt/decrypt `wallet.enc`)
 
-Run the bot:
+On first run the agent creates `wallet.enc`; fund that address with test ETH. No private key is ever stored in plaintext.
+
+### Legacy bot (root)
+
+For the older `bot.js` flow (not TEE-sealed):
 ```bash
+# .env with PRIVATE_KEY and RPC_URL
 node bot.js
-```
-
-Expected output:
-```
-Using local .env key (NOT secure — dev mode only)
-Wallet: 0xA77b...9837
-Balance: 0.0 ETH
-Pool found: 0x94bf...eC0 (fee: 500)
-ETH: $2040.42 (24h: -0.07%, 7d: -17.77%)
-Strategy Decision: HOLD (score: -13, confidence: 13%)
 ```
 
 ### Deploying the website
@@ -148,51 +156,42 @@ python web/dist/app.py
 
 ## Deploy to TEE (Production)
 
+See **[DEPLOYMENT.md](DEPLOYMENT.md)** for full steps. Quick version:
+
 Prerequisites: [Docker](https://docs.docker.com/get-docker/), [Oasis CLI](https://docs.oasis.io/build/tools/oasis-cli/)
 
 ```bash
-# Build the container
+# From repo root: build and push
 docker build --platform linux/amd64 -t yourusername/trading-bot:latest .
 docker push yourusername/trading-bot:latest
 
-# Register and deploy to Oasis ROFL
-oasis rofl build --force
-oasis rofl create --account myaccount
-oasis rofl deploy --account myaccount
+# From backend/tee-agent: one-command deploy (or run oasis commands from repo root)
+cd backend/tee-agent && npm run deploy
 ```
 
-When running inside the TEE, the bot automatically switches to hardware-derived key generation:
+When running inside the TEE, the agent uses the sealed wallet (`wallet.enc` + `WALLET_PASSPHRASE`); keys never leave the enclave.
 
 
 
 ## Repository Structure
 
 ```
-├── bot.js           # Main bot — TEE key gen + trading loop
-├── strategy.js      # 5-signal heuristic decision engine
-├── Dockerfile       # Container for ROFL deployment
-├── compose.yaml     # Docker Compose for Oasis ROFL
-├── rofl.yaml        # ROFL app manifest
-├── .env.example     # Template for local dev secrets
-├── package.json     # Dependencies
-└── .gitignore       # Excludes node_modules, .env, *.orc
+├── backend/tee-agent/   # TEE trading agent (TypeScript)
+│   ├── src/              # main.ts, wallet, strategy, policy, trader
+│   ├── scripts/         # deploy.ts, extract-attestation.ts
+│   ├── .env.example     # Template — copy to .env
+│   └── package.json     # npm run build|start|deploy|extract-attestation
+├── Dockerfile           # Container for ROFL deployment
+├── compose.yaml         # Docker Compose for Oasis ROFL
+├── rofl.yaml            # ROFL app manifest (Intel TDX)
+├── DEPLOYMENT.md        # Step-by-step TEE deployment
+├── attestation-report.md # TEE attestation (for judges)
+└── bot.js / strategy.js # Legacy bot (root)
 ```
 
 ## Key Innovation
 
-```javascript
-async function getPrivateKey() {
-    if (existsSync("/run/rofl-appd.sock")) {
-        // Inside TEE → hardware-generated key
-        const client = new RoflClient();
-        return await client.generateKey("trading-bot-key", KeyKind.SECP256K1);
-    }
-    // Local dev → .env key
-    return process.env.PRIVATE_KEY;
-}
-```
-
-The same codebase runs in both dev and production. In the TEE, keys are derived from hardware, so they never exist outside the encrypted enclave.
+The agent **never** reads a raw private key. Locally it uses a passphrase-encrypted `wallet.enc` (AES-256-CBC); in the TEE the same file can be sealed in the enclave. The private key is generated inside the process (hardware entropy), encrypted, and only used for signing—never exported or logged. No `PRIVATE_KEY` in env; no backdoor.
 
 
 <!-- 

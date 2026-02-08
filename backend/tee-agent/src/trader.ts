@@ -2,7 +2,7 @@ import { ethers, type TransactionRequest, type Provider } from "ethers";
 import type { TradingSignal } from "./strategy";
 import type { WalletHandle } from "./wallet";
 
-const UNISWAP_V2_ROUTER = "0x4752ba5dbc23f44d87826276bf6b1c372ad24";
+const UNISWAP_V2_ROUTER = "0x4752ba5DBc23f44D87826276BF6Fd6b1C372aD24";
 
 const ROUTER_ABI = [
   "function swapExactETHForTokens(uint256 amountOutMin, address[] path, address to, uint256 deadline) external payable returns (uint256[] amounts)",
