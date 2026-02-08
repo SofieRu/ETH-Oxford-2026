@@ -3,7 +3,7 @@
 <br>
 
 <p align="center">
-  <img src="images/Aegis Logo Transperent.png" alt="Aegis logo" width="350">
+  <img src="images/Aegis Logo Transparent.png" alt="Aegis logo" width="350">
 </p>
 
 
