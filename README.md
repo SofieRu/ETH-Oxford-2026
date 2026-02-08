@@ -9,7 +9,6 @@
 
 # _AEGIS_
 
-> Trustless AI trading agents powered by Intel TDX hardware security
 
 ### Team Members  
 Sofie Rüffer  
@@ -25,6 +24,8 @@ Every trading bot today asks you to hand over your private key or deposit funds 
 <br>
 
 ## Our Solution
+
+> Trustless AI trading agents powered by Intel TDX hardware security
 
 Here, we built _AEGIS_, an autonomous trading bot that generates its own private keys inside an **Intel TDX Trusted Execution Environment** (TEE) via [Oasis ROFL](https://docs.oasis.io/build/rofl/). This means that nobody can access user funds, not even us.
 
