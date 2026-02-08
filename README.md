@@ -95,7 +95,7 @@ AEGIS is built as **5 modules** that run in sequence every cycle:
 ## Live demo (hackathon)
 
 <p align="center">
-  <img src="images/demo_final.gif" alt="AEGISdemo" width="680">
+  <img src="presentation/Recording 2026-02-08 091112.gif" alt="AEGISdemo" width="680">
 </p>
 
 <br>
