@@ -94,9 +94,14 @@ AEGIS is built as **5 modules** that run in sequence every cycle:
 <br>
 
 
-## Live demo (hackathon)
+## Live demo
 
 **[View Live Dashboard](web/demo-dashboard.html)**
+<p align="center">
+  <img src="presentation/Recording 2026-02-08 091112.gif" alt="AEGISdemo" width="680">
+</p>
+
+<br>
 
 | Item | Value |
 |------|--------|
