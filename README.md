@@ -1,5 +1,7 @@
 # ETH Oxford 2026
 
+<br>
+
 <p align="center">
   <img src="images/Aegis Logo.png" alt="Aegis logo" width="330">
 </p>
