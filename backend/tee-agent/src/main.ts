@@ -1,4 +1,4 @@
-import "dotenv/config";
+import "./env-loader";
 import { ethers } from "ethers";
 import { initWallet, getBalance } from "./wallet";
 import { generateSignal, type TradingSignal } from "./strategy";

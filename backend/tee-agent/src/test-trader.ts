@@ -1,4 +1,4 @@
-import "dotenv/config";
+import "./env-loader";
 import { ethers } from "ethers";
 import { initWallet, getBalance } from "./wallet";
 import { buildSwapTransaction } from "./trader";
@@ -12,7 +12,11 @@ async function main(): Promise<void> {
   console.log("Wallet address:", wallet.address);
   console.log();
 
-  const rpcUrl = process.env.RPC_URL ?? "https://sepolia.base.org";
+  const rpcUrl = process.env.RPC_URL;
+  if (!rpcUrl) {
+    console.error("RPC_URL is not set in backend/tee-agent/.env");
+    process.exit(1);
+  }
   console.log("Creating provider (RPC):", rpcUrl);
   const provider = new ethers.JsonRpcProvider(rpcUrl);
 

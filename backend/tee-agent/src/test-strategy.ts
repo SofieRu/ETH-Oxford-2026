@@ -1,4 +1,4 @@
-import "dotenv/config";
+import "./env-loader";
 import { generateSignal } from "./strategy";
 
 async function main(): Promise<void> {

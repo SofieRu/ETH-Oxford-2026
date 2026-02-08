@@ -19,7 +19,7 @@ try {
 }
 
 try {
-  require('dotenv').config();
+  require("./env-loader");
   console.log('✓ dotenv installed');
   console.log('✓ RPC_URL:', process.env.RPC_URL);
   console.log('✓ CHAIN_ID:', process.env.CHAIN_ID);
