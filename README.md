@@ -1,7 +1,9 @@
 # ETH Oxford 2026
 
+<br>
+
 <p align="center">
-  <img src="images/image.png" alt="Project logo" width="330">
+  <img src="images/image.png" alt="Project logo" width="300">
 </p>
 
 
