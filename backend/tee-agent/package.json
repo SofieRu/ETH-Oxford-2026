@@ -6,7 +6,9 @@
   "scripts": {
     "build": "tsc",
     "start": "node dist/main.js",
-    "dev": "ts-node src/main.ts"
+    "dev": "ts-node src/main.ts",
+    "deploy": "ts-node scripts/deploy.ts",
+    "extract-attestation": "ts-node scripts/extract-attestation.ts"
   },
   "dependencies": {
     "ethers": "^6.10.0",

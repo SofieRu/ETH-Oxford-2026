@@ -1,4 +1,4 @@
-import "dotenv/config";
+import "./env-loader";
 import { loadPolicy, checkPolicy, recordTrade, getTradingState } from "./policy";
 import type { TradingSignal } from "./strategy";
 

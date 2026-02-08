@@ -1,12 +1,18 @@
 services:
   trading-bot:
     build: .
-    image: "docker.io/sofie/trading-bot:latest"
+    image: "docker.io/mattwilsomo/trading-bot:latest"  # ← Your actual username
     platform: linux/amd64
     volumes:
-      - bot-data:/app/data
+      - /storage/bot-data:/app/data
       - /run/rofl-appd.sock:/run/rofl-appd.sock
     environment:
       - RPC_URL=https://sepolia.base.org
+      - WALLET_KEY_FILE=/app/data/wallet.enc
 volumes:
   bot-data:
+    driver: local
+    driver_opts:
+      type: none
+      device: /storage/bot-data
+      o: bind

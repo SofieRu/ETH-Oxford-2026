@@ -1,4 +1,4 @@
-import "dotenv/config";
+import "./env-loader";
 import * as fs from "fs";
 import * as path from "path";
 import { initWallet, loadWallet, getAddress } from "./wallet";
