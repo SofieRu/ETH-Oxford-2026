@@ -49,20 +49,20 @@ Users simply send ETH to the bot's wallet address. AEGIS monitors market conditi
                       User sends ETH
                             │
                             ▼
-┌──────────────────── Intel TDX (TEE) ──────────────────┐
-│                                                       │
-│  1. Generate private key (hardware-derived)           │
-│                                                       │
+┌──────────────────── Intel TDX (TEE) ────────────────────────────┐
+│                                                                 │
+│  1. Generate private key (hardware-derived)                     │
+│                                                                 │
 │  2. Fetch market data (multi-oracle: CoinGecko + CryptoCompare) │
-│                                                       │
-│  3. Strategy: RSI momentum → BUY / SELL / HOLD        │
-│                                                       │
-│  4. Policy check → if allowed, swap ETH ↔ USDC        │
-│                                                       │
-│  5. Sign transaction with TEE-secured key             │
-│                                                       │
-│  Nothing leaves this box except signed transactions.  │
-└───────────────────────────────────────────────────────┘
+│                                                                 │
+│  3. Strategy: RSI momentum → BUY / SELL / HOLD                  │
+│                                                                 │
+│  4. Policy check → if allowed, swap ETH ↔ USDC                  │
+│                                                                 │
+│  5. Sign transaction with TEE-secured key                       │
+│                                                                 │
+│  Nothing leaves this box except signed transactions.            │
+└─────────────────────────────────────────────────────────────────┘
                             │
                             ▼
     Transaction on Base Sepolia (verifiable on-chain)
@@ -120,7 +120,8 @@ Verification: see **attestation-report.md** and **DEPLOYMENT.md** in this repo.
 
 ## How to run it
 
-### TEE agent (AEGIS — recommended)
+### TEE agent
+
 
 ```bash
 git clone https://github.com/SofieRu/ETH-Oxford-2026.git
