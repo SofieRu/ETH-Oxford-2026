@@ -1,7 +1,7 @@
 # ETH Oxford 2026
 
 <p align="center">
-  <img src="images/Logo_Final.png" alt="Haikara logo" width="330">
+  <img src="images/image.png" alt="Project logo" width="330">
 </p>
 
 
