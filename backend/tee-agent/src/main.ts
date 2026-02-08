@@ -31,6 +31,7 @@ async function runLoop(
 
   for (;;) {
     const cycleStart = Date.now();
+    console.log("[main] --- Cycle start | Wallet:", wallet.address, "---");
 
     if (policy.emergencyStop) {
       console.log("[main] Emergency stop active — skipping cycle. Set EMERGENCY_STOP=0 to resume.");
@@ -92,8 +93,18 @@ async function main(): Promise<void> {
   console.log("[main] CHAIN_ID:", process.env.CHAIN_ID ?? "(from RPC)");
 
   console.log("[main] Initializing wallet...");
-  const wallet = await initWallet();
-  console.log("[main] Wallet:", wallet.address);
+  let wallet: Awaited<ReturnType<typeof initWallet>>;
+  try {
+    wallet = await initWallet();
+  } catch (err) {
+    console.error("[main] FATAL: Wallet initialization failed:", err instanceof Error ? err.message : String(err));
+    throw err;
+  }
+
+  console.log("================================================================================");
+  console.log("  TEE WALLET ADDRESS:", wallet.address);
+  console.log("  FUND THIS ADDRESS WITH SEPOLIA ETH");
+  console.log("================================================================================");
 
   const provider = new ethers.JsonRpcProvider(rpcUrl);
   try {

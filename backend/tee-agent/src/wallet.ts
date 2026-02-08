@@ -118,7 +118,9 @@ export async function generateWallet(): Promise<WalletHandle> {
   const filePath = getWalletPath();
   fs.mkdirSync(path.dirname(filePath), { recursive: true });
   fs.writeFileSync(filePath, JSON.stringify(payload), { mode: 0o600 });
-  return new WalletHandle(signer);
+  const handle = new WalletHandle(signer);
+  console.log("[wallet] Generated new wallet:", handle.address);
+  return handle;
 }
 
 /**
@@ -136,7 +138,9 @@ export function loadWallet(): WalletHandle {
   const passphrase = getPassphrase();
   const privateKeyHex = decrypt(payload, passphrase);
   const signer = new ethers.Wallet(privateKeyHex);
-  return new WalletHandle(signer);
+  const handle = new WalletHandle(signer);
+  console.log("[wallet] Loaded wallet:", handle.address);
+  return handle;
 }
 
 /**
@@ -146,9 +150,11 @@ export function loadWallet(): WalletHandle {
  */
 export async function initWallet(): Promise<WalletHandle> {
   const filePath = getWalletPath();
+  console.log("[wallet] initWallet: path =", filePath, "| exists =", fs.existsSync(filePath));
   if (fs.existsSync(filePath)) {
     return loadWallet();
   }
+  console.log("[wallet] No existing wallet file; generating new wallet.");
   return generateWallet();
 }
 
