@@ -43,7 +43,7 @@ Users simply send ETH to the bot's wallet address. AEGIS monitors market conditi
 
 <br>
 
-## How It Works
+## Architecture 
 
 ```
                       User sends ETH
@@ -70,8 +70,6 @@ Users simply send ETH to the bot's wallet address. AEGIS monitors market conditi
 ```
 
 <br>
-
-## Architecture 
 
 AEGIS is built as 5 modules that run in sequence every cycle:
 
