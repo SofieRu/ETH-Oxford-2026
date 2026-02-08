@@ -362,4 +362,4 @@ MIT
 
 ## Acknowledgement
 
-We used generative AI tools to write, review, and develop code, including ChatGPT 5.2 (OpenAI, 2025), Gemini 3 (Google, 2025), and Claude 4.6 (Anthropic, 2025). The company logo was also created using Nano Banana Pro (Google, 2025).
+We used generative AI tools to write, review, and develop code, including ChatGPT 5.2 (OpenAI, 2025), Gemini 3 (Google, 2025), and Claude 4.6 (Anthropic, 2025). The company logo was also created using Nano Banana Pro (Google, 2025). 
