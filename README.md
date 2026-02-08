@@ -9,6 +9,8 @@
 
 # _AEGIS_
 
+> Trustless AI trading agents powered by Intel TDX hardware security
+
 ### Team Members  
 Sofie Rüffer  
 Matthew Wilson   
@@ -94,11 +96,7 @@ AEGIS is built as **5 modules** that run in sequence every cycle:
 
 ## Live demo (hackathon)
 
-<p align="center">
-  <img src="images/demo_final.gif" alt="AEGISdemo" width="680">
-</p>
-
-<br>
+**[View Live Dashboard](web/demo-dashboard.html)**
 
 | Item | Value |
 |------|--------|
@@ -106,8 +104,18 @@ AEGIS is built as **5 modules** that run in sequence every cycle:
 | **Network** | Oasis Sapphire Testnet |
 | **TEE** | Intel TDX (Oasis ROFL) |
 | **Wallet** | See `attestation-report.md` or run `npm run extract-attestation` in `backend/tee-agent` (wallet may need manual add from `oasis rofl machine logs default`) |
+| **Status Dashboard** | [Open web/demo-dashboard.html](web/demo-dashboard.html) |
+
+**Note:** The ROFL app runs on Oasis Sapphire Testnet, but the agent executes trades on Base Sepolia.
 
 Verification: see **attestation-report.md** and **DEPLOYMENT.md** in this repo.
+
+To view live agent logs (requires Oasis CLI):
+
+```bash
+# From repo root
+oasis rofl machine logs default | tail -50
+```
 
 <br>
 
@@ -119,7 +127,7 @@ Verification: see **attestation-report.md** and **DEPLOYMENT.md** in this repo.
 | Blockchain | Base Sepolia (Ethereum L2) |
 | DEX | Uniswap V2 (Base Sepolia) |
 | Strategy | RSI momentum (CoinGecko + CryptoCompare oracles) |
-| Language | Node.js (ES modules) |
+| Language | TypeScript / Node.js |
 | Market Data | CoinGecko API (free, no key) |
 
 
@@ -145,20 +153,17 @@ Create `.env` from `.env.example` with at least:
 
 On first run the agent creates `wallet.enc`; fund that address with test ETH. No private key is ever stored in plaintext.
 
-### Legacy bot (root)
+### View Status Dashboard
 
-For the older `bot.js` flow (not TEE-sealed):
+Open the live status dashboard in your browser:
+
 ```bash
-# .env with PRIVATE_KEY and RPC_URL
-node bot.js
+cd web
+open demo-dashboard.html  # macOS
+start demo-dashboard.html # Windows
 ```
 
-### Deploying the website
-This project was developed using Python 3.13.2. 
-```bash
-pip install requirements.txt
-python web/dist/app.py
-```
+No server required — it's a static HTML page showing real-time agent status.
 
 <br>
 
@@ -184,17 +189,33 @@ When running inside the TEE, the agent uses the sealed wallet (`wallet.enc` + `W
 ## Repository Structure
 
 ```
-├── backend/tee-agent/   # TEE trading agent (TypeScript)
-│   ├── src/              # main.ts, wallet, strategy, policy, trader
-│   ├── scripts/         # deploy.ts, extract-attestation.ts
-│   ├── .env.example     # Template — copy to .env
-│   └── package.json     # npm run build|start|deploy|extract-attestation
-├── Dockerfile           # Container for ROFL deployment
-├── compose.yaml         # Docker Compose for Oasis ROFL
-├── rofl.yaml            # ROFL app manifest (Intel TDX)
-├── DEPLOYMENT.md        # Step-by-step TEE deployment
-├── attestation-report.md # TEE attestation (for judges)
-└── bot.js / strategy.js # Legacy bot (root)
+ETH-Oxford-2026/
+├── backend/
+│   └── tee-agent/              # TEE trading agent
+│       ├── src/                # TypeScript source code
+│       │   ├── main.ts         # Main orchestrator
+│       │   ├── wallet.ts       # Encrypted wallet management
+│       │   ├── strategy.ts     # RSI trading strategy
+│       │   ├── policy.ts       # Safety policy enforcement
+│       │   └── trader.ts       # Uniswap V2 execution
+│       ├── scripts/            # Deployment automation
+│       │   ├── deploy.ts       # One-command deployment
+│       │   └── extract-attestation.ts  # Attestation extraction
+│       ├── BACKEND-CONFIG.md   # Backend configuration docs
+│       ├── package.json        # Dependencies & scripts
+│       └── .env.example        # Environment template
+├── web/
+│   └── demo-dashboard.html     # Live status dashboard
+├── images/
+│   └── Aegis Logo*.png         # Project branding
+├── attestation.json            # Machine-readable attestation
+├── attestation.txt             # Quick reference attestation
+├── attestation-report.md       # Human-readable attestation proof
+├── Dockerfile                  # Container for ROFL deployment
+├── compose.yaml                # Docker Compose for Oasis ROFL
+├── rofl.yaml                   # ROFL app manifest (Intel TDX)
+├── README.md                   # This file
+└── DEPLOYMENT.md               # Detailed deployment guide
 ```
 
 ## Key Innovation
@@ -366,6 +387,14 @@ npx ts-node src/main.ts
 ## License
 
 MIT
+
+## Contact
+
+- **Sofie Rüffer** — [@SofieRu](https://github.com/SofieRu)
+- **Matthew Wilson** — [@mattwilsomo](https://github.com/mattwilsomo)
+- **Aakash Gnanavelu** — [@AakashGnanavelu](https://github.com/AakashGnanavelu)
+
+For questions about this project, please open an issue on GitHub.
 
 ## Acknowledgement
 
